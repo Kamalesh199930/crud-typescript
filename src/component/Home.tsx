@@ -1,25 +1,34 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Home.css";
-import { IEmployee, PageEnum, dummyEmployeeList } from "./Employee";
+import { IEmployee, PageEnum } from "./Employee";
 import EmployeeList from "./EmployeeList";
 import AddEmployee from "./AddEmployee";
 import EditEmployee from "./EditEmployee";
 const Home = () => {
-    const [employeeList, setEmployeeList] = useState(
-        dummyEmployeeList as IEmployee[]
-    );
+    const [employeeList, setEmployeeList] = useState([] as IEmployee[]);
     const [shownPage, setShownPage] = useState(PageEnum.list);
     const [dataToEdit, setDataToEdit] = useState({} as IEmployee);
+
+    useEffect(() => {
+        const listInString = window.localStorage.getItem("EmployeeList");
+        if (listInString) {
+            _setEmployeeList(JSON.parse(listInString));
+        }
+    }, []);
     const onAddEmployeeClickHnd = () => {
         setShownPage(PageEnum.add);
     };
     const showListPage = () => {
         setShownPage(PageEnum.list);
     };
-    const addEmployee = (data: IEmployee) => {
-        setEmployeeList([...employeeList, data]);
+    const _setEmployeeList = (list: IEmployee[]) => {
+        setEmployeeList(list);
+        window.localStorage.setItem("EmployeeList", JSON.stringify(list));
     };
-    const deletEmployee = (data: IEmployee) => {
+    const addEmployee = (data: IEmployee) => {
+        _setEmployeeList([...employeeList, data]);
+    };
+    const deleteEmployee = (data: IEmployee) => {
         //To Index from array, i,e employeeList
 
         //Splice that
@@ -27,7 +36,7 @@ const Home = () => {
         const indexToDelete = employeeList.indexOf(data);
         const tempList = [...employeeList];
         tempList.splice(indexToDelete, 1);
-        setEmployeeList(tempList);
+        _setEmployeeList(tempList);
     };
     const editEmployeeData = (data: IEmployee) => {
         setShownPage(PageEnum.edit);
@@ -38,7 +47,7 @@ const Home = () => {
         const indexOfRecord = employeeList.indexOf(filteredData);
         const tempData = [...employeeList];
         tempData[indexOfRecord] = data;
-        setEmployeeList(tempData);
+        _setEmployeeList(tempData);
     };
     return (
         <>
@@ -57,7 +66,7 @@ const Home = () => {
                         />
                         <EmployeeList
                             list={employeeList}
-                            onDeleteClickHnd={deletEmployee}
+                            onDeleteClickHnd={deleteEmployee}
                             onEdit={editEmployeeData}
                         />
                     </>
