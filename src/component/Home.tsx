@@ -9,6 +9,7 @@ const Home = () => {
     const [shownPage, setShownPage] = useState(PageEnum.list);
     const [dataToEdit, setDataToEdit] = useState({} as IEmployee);
 
+    //added local storage
     useEffect(() => {
         const listInString = window.localStorage.getItem("EmployeeList");
         if (listInString) {
